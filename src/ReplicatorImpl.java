@@ -50,7 +50,7 @@ public class ReplicatorImpl implements Replicator {
         }
 
         try {
-            PaxosPeer peer = new LocalPaxosPeer();
+            PaxosPeer peer = new LocalPaxosPeer(me);
             PaxosPeer stub = (PaxosPeer) UnicastRemoteObject.exportObject(peer, 0);
             List<PaxosPeer> peers = Lists.newArrayList();
 
