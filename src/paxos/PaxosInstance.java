@@ -28,4 +28,8 @@ public class PaxosInstance {
     public void decide(Event event) {
 
     }
+
+    public int getSequence() {
+        return seq;
+    }
 }
