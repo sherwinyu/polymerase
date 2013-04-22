@@ -1,9 +1,6 @@
 package com.joshma.polymerase.rep;
 
 import com.google.common.collect.Lists;
-import com.joshma.polymerase.rep.InvalidServerException;
-import com.joshma.polymerase.rep.Replicator;
-import com.joshma.polymerase.rep.ReplicatorImpl;
 import org.junit.Test;
 
 import java.util.List;

@@ -4,7 +4,6 @@ import java.lang.reflect.Method;
 
 /**
  * Represents a method call.
- * @author joshma
  */
 public class Event {
 

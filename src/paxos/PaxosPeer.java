@@ -5,7 +5,6 @@ import java.rmi.RemoteException;
 
 /**
  * A Paxos peer. Proposes and agrees on values.
- * @author joshma
  */
 public interface PaxosPeer extends Remote {
 

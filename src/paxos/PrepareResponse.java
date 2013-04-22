@@ -1,7 +1,5 @@
 package com.joshma.polymerase.paxos;
 
-import com.joshma.polymerase.paxos.PaxosValue;
-
 public class PrepareResponse {
 
     public final Status status;

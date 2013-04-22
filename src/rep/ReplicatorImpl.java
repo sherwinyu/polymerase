@@ -16,8 +16,6 @@ import java.util.List;
 /**
  * The core class in this package. Instantiates and maintains server connections and creates
  * proxied, replicated objects.
- *
- * @author joshma
  */
 public class ReplicatorImpl implements Replicator {
 
