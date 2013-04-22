@@ -13,7 +13,7 @@ public class PaxosTest {
     private static final int NUM_PEERS = 10;
     private List<PaxosPeer> peers;
 
-    private int nDecided(List<PaxosPeer> peers, int seq) {
+    private int nDecided(List<PaxosPeer> peers, int seq) throws RemoteException {
         int count = 0;
         PaxosValue decidedValue = null;
         for (PaxosPeer peer : peers) {
@@ -30,7 +30,7 @@ public class PaxosTest {
         return count;
     }
 
-    private void waitN(List<PaxosPeer> peers, int seq, int wantedN) throws InterruptedException {
+    private void waitN(List<PaxosPeer> peers, int seq, int wantedN) throws InterruptedException, RemoteException {
         int timeout = 10;
         for (int i = 0; i < 30; i++) {
             if (nDecided(peers, seq) >= wantedN) {
@@ -47,7 +47,7 @@ public class PaxosTest {
         }
     }
 
-    private void waitAll(List<PaxosPeer> peers, int seq) throws InterruptedException {
+    private void waitAll(List<PaxosPeer> peers, int seq) throws InterruptedException, RemoteException {
         waitN(peers, seq, peers.size());
     }
 
@@ -94,7 +94,6 @@ public class PaxosTest {
 
     @Test
     public void testOutOfOrder() throws RemoteException, InterruptedException {
-        int seqNum = 5;
         peers.get(0).start(7, new TestValue(700));
         peers.get(0).start(6, new TestValue(600));
         peers.get(1).start(5, new TestValue(500));

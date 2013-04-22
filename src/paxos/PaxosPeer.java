@@ -12,6 +12,6 @@ public interface PaxosPeer extends Remote {
     public PrepareResponse prepare(int sequenceNumber, int n) throws RemoteException;
     public AcceptResponse accept(int sequenceNumber, int n, PaxosValue value) throws RemoteException;
     public void decide(int sequenceNumber, PaxosValue value) throws RemoteException;
-    public PaxosValue status(int sequenceNumber);
+    public PaxosValue status(int sequenceNumber) throws RemoteException;
 
 }

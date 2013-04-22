@@ -1,14 +1,16 @@
 package com.joshma.polymerase.rep;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.junit.Test;
 
 import java.util.List;
+import java.util.Map;
 
-public class ConnectionTest {
+public class ReplicationTest {
 
     @Test
-    public void testConnect() throws InterruptedException {
+    public void testBasicReplication() throws InterruptedException {
         final int basePort = 5000;
         final int numInstances = 5;
         final List<String> serverStrings = Lists.newArrayList();
@@ -25,6 +27,11 @@ public class ConnectionTest {
                 public void run() {
                     Replicator r = new ReplicatorImpl(serverStrings, j);
                     r.initialize();
+
+                    if (j == 0) {
+                        Map<String, String> storeMap = Maps.newHashMap();
+                        Map<String, String> replicatedMap = r.replicate(storeMap);
+                    }
                 }
             }).start();
         }

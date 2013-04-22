@@ -1,11 +1,13 @@
 package com.joshma.polymerase.rep;
 
+import com.joshma.polymerase.paxos.PaxosValue;
+
 import java.lang.reflect.Method;
 
 /**
  * Represents a method call.
  */
-public class Event {
+public class Event implements PaxosValue {
 
     private final Method method;
     private final Object[] args;
