@@ -31,6 +31,7 @@ public class ReplicationTest {
                     if (j == 0) {
                         Map<String, String> storeMap = Maps.newHashMap();
                         Map<String, String> replicatedMap = r.replicate(storeMap);
+                        replicatedMap.put("k1", "v1");
                     }
                 }
             }).start();

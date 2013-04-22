@@ -17,6 +17,7 @@ public class ReplicationHandler implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         // TODO Check that args are all serializable.
+        System.err.printf("METHOD %s WAS INVOKED WITH ARGS %s\n", method, args);
         return method.invoke(delegate, args);
     }
 }
