@@ -1,4 +1,4 @@
-package com.joshma.polymerase;
+package com.joshma.polymerase.rep;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;

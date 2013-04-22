@@ -1,6 +1,4 @@
-package com.joshma.polymerase;
-
-import java.io.IOException;
+package com.joshma.polymerase.rep;
 
 /**
  * General interface for a replicated service.

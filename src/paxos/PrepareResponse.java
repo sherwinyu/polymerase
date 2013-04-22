@@ -1,12 +1,12 @@
 package com.joshma.polymerase.paxos;
 
-import com.joshma.polymerase.Event;
+import com.joshma.polymerase.paxos.PaxosValue;
 
 public class PrepareResponse {
 
     public final Status status;
     public final int n;
-    public final Event v;
+    public final PaxosValue v;
 
     public PrepareResponse(Status status) {
         this.status = status;
@@ -14,7 +14,7 @@ public class PrepareResponse {
         this.v = null;
     }
 
-    public PrepareResponse(Status status, int n, Event v) {
+    public PrepareResponse(Status status, int n, PaxosValue v) {
         this.status = status;
         this.n = n;
         this.v = v;

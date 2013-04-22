@@ -1,34 +1,36 @@
 package com.joshma.polymerase.paxos;
 
-import com.joshma.polymerase.Event;
-
 public class PaxosInstance {
 
     private final int seq;
-    private final Event proposedEvent;
+    private final PaxosValue proposedValue;
     private int np;
     private int na;
-    private Event va;
-    private Event decidedEvent;
+    private PaxosValue va;
+    private PaxosValue decidedValue;
 
-    public PaxosInstance(int seq, Event event) {
+    public PaxosInstance(int seq) {
+        this(seq, null);
+    }
+
+    public PaxosInstance(int seq, PaxosValue value) {
         this.seq = seq;
-        this.proposedEvent = event;
+        this.proposedValue = value;
         this.np = -1;
         this.na = -1;
         this.va = null;
-        this.decidedEvent = null;
+        this.decidedValue = null;
     }
 
-    public Event getDecidedEvent() {
-        return decidedEvent;
+    public synchronized PaxosValue getProposedValue() {
+        return proposedValue;
     }
 
-    public Event getProposedEvent() {
-        return proposedEvent;
+    public synchronized PaxosValue getDecidedValue() {
+        return decidedValue;
     }
 
-    public PrepareResponse prepare(int n) {
+    public synchronized PrepareResponse prepare(int n) {
         if (n > np) {
             np = n;
             return new PrepareResponse(Status.OK, na, va);
@@ -36,7 +38,7 @@ public class PaxosInstance {
         return new PrepareResponse(Status.REJECT);
     }
 
-    public AcceptResponse accept(int n, Event v) {
+    public synchronized AcceptResponse accept(int n, PaxosValue v) {
         if (n >= np) {
             np = n;
             na = n;
@@ -46,11 +48,11 @@ public class PaxosInstance {
         return new AcceptResponse(Status.REJECT);
     }
 
-    public void decide(Event event) {
-        decidedEvent; = event;
+    public synchronized void decide(PaxosValue v) {
+        decidedValue = v;
     }
 
-    public int getSequence() {
+    public synchronized int getSequence() {
         return seq;
     }
 }

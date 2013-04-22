@@ -1,4 +1,4 @@
-package com.joshma.polymerase;
+package com.joshma.polymerase.rep;
 
 /**
  * Indicates server string was not in the format port or hostname:port.

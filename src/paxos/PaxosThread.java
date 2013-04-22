@@ -1,7 +1,5 @@
 package com.joshma.polymerase.paxos;
 
-import com.joshma.polymerase.Event;
-
 import java.rmi.RemoteException;
 import java.util.List;
 
@@ -15,6 +13,8 @@ public class PaxosThread extends Thread {
     private final int me;
 
     public PaxosThread(PaxosInstance instance, List<PaxosPeer> peers, int me) {
+        assert(peers.size() > 0);
+
         this.instance = instance;
         this.peers = peers;
         this.me = me;
@@ -25,13 +25,15 @@ public class PaxosThread extends Thread {
     public void run() {
         final int seq = instance.getSequence();
         final int majority = (peers.size() / 2) + 1;
-        
-        Event proposalV = instance.getProposedEvent();
+
+        PaxosValue proposalV = instance.getProposedValue();
+        System.err.printf("Starting paxos for seq=%d, value=%s\n", seq, proposalV);
 
         try {
             for (int n = me; ; n += peers.size()) {
                 int prepareCount = 0;
                 int maxN = 0;
+                System.err.printf("Starting round with n=%d\n", n);
                 // Send prepare(n)
                 for (PaxosPeer peer : peers) {
                     try {
@@ -82,6 +84,7 @@ public class PaxosThread extends Thread {
         }
 
         // Decided
+        System.err.printf("Done - decided on %s\n", proposalV);
         for (PaxosPeer peer : peers) {
             try {
                 peer.decide(seq, proposalV);

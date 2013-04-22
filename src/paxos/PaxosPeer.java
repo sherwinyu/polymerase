@@ -1,7 +1,5 @@
 package com.joshma.polymerase.paxos;
 
-import com.joshma.polymerase.Event;
-
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
@@ -11,8 +9,10 @@ import java.rmi.RemoteException;
  */
 public interface PaxosPeer extends Remote {
 
+    public void start(int sequenceNumber, PaxosValue value) throws RemoteException;
     public PrepareResponse prepare(int sequenceNumber, int n) throws RemoteException;
-    public AcceptResponse accept(int sequenceNumber, int n, Event event) throws RemoteException;
-    public void decide(int sequenceNumber, Event event) throws RemoteException;
+    public AcceptResponse accept(int sequenceNumber, int n, PaxosValue value) throws RemoteException;
+    public void decide(int sequenceNumber, PaxosValue value) throws RemoteException;
+    public PaxosValue status(int sequenceNumber);
 
 }

@@ -1,4 +1,4 @@
-package com.joshma.polymerase;
+package com.joshma.polymerase.rep;
 
 import com.google.common.collect.Lists;
 import com.joshma.polymerase.net.ServerIdentifier;
@@ -7,7 +7,6 @@ import com.joshma.polymerase.paxos.PaxosPeer;
 
 import java.rmi.AlreadyBoundException;
 import java.rmi.NotBoundException;
-import java.rmi.RMISecurityManager;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;

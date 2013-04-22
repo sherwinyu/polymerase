@@ -1,6 +1,6 @@
 package com.joshma.polymerase.net;
 
-import com.joshma.polymerase.InvalidServerException;
+import com.joshma.polymerase.rep.InvalidServerException;
 
 /**
  * Represent a server via hostname:port combination. hostname is null for loopback address.
