@@ -60,7 +60,7 @@ public class LocalPaxosPeer implements PaxosPeer {
         if (instance == null) {
             return null;
         }
-        return instance.accept(n);
+        return instance.accept(n, event);
     }
 
     @Override

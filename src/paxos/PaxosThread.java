@@ -26,7 +26,7 @@ public class PaxosThread extends Thread {
         final int seq = instance.getSequence();
         final int majority = (peers.size() / 2) + 1;
         
-        Event proposalV = instance.getValue();
+        Event proposalV = instance.getProposedEvent();
 
         try {
             for (int n = me; ; n += peers.size()) {
@@ -48,7 +48,6 @@ public class PaxosThread extends Thread {
                         }
                     } catch (RemoteException e) {
                         System.err.println("RMI exception: " + e.getMessage());
-                        continue;
                     }
                 }
 
@@ -67,7 +66,6 @@ public class PaxosThread extends Thread {
                         }
                     } catch (RemoteException e) {
                         System.err.println("RMI exception: " + e.getMessage());
-                        continue;
                     }
                 }
 
@@ -89,7 +87,6 @@ public class PaxosThread extends Thread {
                 peer.decide(seq, proposalV);
             } catch (RemoteException e) {
                 System.err.println("RMI exception: " + e.getMessage());
-                continue;
             }
         }
     }

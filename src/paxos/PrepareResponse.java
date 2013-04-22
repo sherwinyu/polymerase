@@ -8,6 +8,12 @@ public class PrepareResponse {
     public final int n;
     public final Event v;
 
+    public PrepareResponse(Status status) {
+        this.status = status;
+        this.n = 0;
+        this.v = null;
+    }
+
     public PrepareResponse(Status status, int n, Event v) {
         this.status = status;
         this.n = n;
