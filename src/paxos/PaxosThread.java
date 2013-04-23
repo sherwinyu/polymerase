@@ -8,14 +8,16 @@ import java.util.List;
  */
 public class PaxosThread extends Thread {
 
-    private final PaxosInstance instance;
     private final List<PaxosPeer> peers;
     private final int me;
+    private final int sequenceNumber;
+    private final PaxosValue proposedValue;
 
-    public PaxosThread(PaxosInstance instance, List<PaxosPeer> peers, int me) {
+    public PaxosThread(int sequenceNumber, PaxosValue proposedValue, List<PaxosPeer> peers, int me) {
         assert(peers.size() > 0);
 
-        this.instance = instance;
+        this.sequenceNumber = sequenceNumber;
+        this.proposedValue = proposedValue;
         this.peers = peers;
         this.me = me;
     }
@@ -23,10 +25,10 @@ public class PaxosThread extends Thread {
     // TODO: Update Done status.
     @Override
     public void run() {
-        final int seq = instance.getSequence();
+        final int seq = sequenceNumber;
         final int majority = (peers.size() / 2) + 1;
 
-        PaxosValue proposalV = instance.getProposedValue();
+        PaxosValue proposalV = proposedValue;
         System.err.printf("Starting paxos for seq=%d, value=%s\n", seq, proposalV);
 
         try {

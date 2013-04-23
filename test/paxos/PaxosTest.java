@@ -12,6 +12,7 @@ public class PaxosTest {
 
     private static final int NUM_PEERS = 10;
     private List<PaxosPeer> peers;
+    private List<LocalPaxosPeer> lpeers;
 
     private int nDecided(List<PaxosPeer> peers, int seq) throws RemoteException {
         int count = 0;
@@ -54,11 +55,14 @@ public class PaxosTest {
     @Before
     public void setup() throws RemoteException {
         peers = Lists.newArrayList();
+        lpeers = Lists.newArrayList();
         for (int i = 0; i < NUM_PEERS; i++) {
-            peers.add(new LocalPaxosPeer(i));
+            LocalPaxosPeer peer = new LocalPaxosPeer(i);
+            peers.add(peer);
+            lpeers.add(peer);
         }
-        for (PaxosPeer peer : peers) {
-            ((LocalPaxosPeer) peer).initialize(peers);
+        for (LocalPaxosPeer peer : lpeers) {
+            peer.initialize(peers);
         }
     }
 
@@ -66,7 +70,7 @@ public class PaxosTest {
     public void testSingleInstance() throws RemoteException, InterruptedException {
         int seqNum = 2;
         TestValue testValue = new TestValue(5);
-        peers.get(0).start(seqNum, testValue);
+        lpeers.get(0).start(seqNum, testValue);
 
         waitAll(peers, seqNum);
     }
@@ -75,9 +79,9 @@ public class PaxosTest {
     public void testMultiplePropSameValue() throws RemoteException, InterruptedException {
         int seqNum = 3;
         TestValue testValue = new TestValue(10);
-        peers.get(2).start(seqNum, testValue);
-        peers.get(3).start(seqNum, testValue);
-        peers.get(4).start(seqNum, testValue);
+        lpeers.get(2).start(seqNum, testValue);
+        lpeers.get(3).start(seqNum, testValue);
+        lpeers.get(4).start(seqNum, testValue);
 
         waitAll(peers, seqNum);
     }
@@ -85,23 +89,23 @@ public class PaxosTest {
     @Test
     public void testMultiplePropDifferentValue() throws RemoteException, InterruptedException {
         int seqNum = 4;
-        peers.get(2).start(seqNum, new TestValue(10));
-        peers.get(3).start(seqNum, new TestValue(11));
-        peers.get(4).start(seqNum, new TestValue(12));
+        lpeers.get(2).start(seqNum, new TestValue(10));
+        lpeers.get(3).start(seqNum, new TestValue(11));
+        lpeers.get(4).start(seqNum, new TestValue(12));
 
         waitN(peers, seqNum, peers.size());
     }
 
     @Test
     public void testOutOfOrder() throws RemoteException, InterruptedException {
-        peers.get(0).start(7, new TestValue(700));
-        peers.get(0).start(6, new TestValue(600));
-        peers.get(1).start(5, new TestValue(500));
+        lpeers.get(0).start(7, new TestValue(700));
+        lpeers.get(0).start(6, new TestValue(600));
+        lpeers.get(1).start(5, new TestValue(500));
 
         waitAll(peers, 7);
 
-        peers.get(0).start(4, new TestValue(400));
-        peers.get(1).start(3, new TestValue(300));
+        lpeers.get(0).start(4, new TestValue(400));
+        lpeers.get(1).start(3, new TestValue(300));
 
         waitAll(peers, 6);
         waitAll(peers, 5);
@@ -111,10 +115,10 @@ public class PaxosTest {
 
     @Test
     public void testMany() throws RemoteException, InterruptedException {
-        final int maxSeq = 100;
+        final int maxSeq = 1000;
         for (int seq = 1; seq < maxSeq; seq++) {
             for (int i = 0; i < peers.size(); i++) {
-                PaxosPeer peer = peers.get(i);
+                LocalPaxosPeer peer = lpeers.get(i);
                 peer.start(seq, new TestValue((seq * 10) + i));
             }
         }

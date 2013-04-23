@@ -25,7 +25,7 @@ public class ReplicatorImpl implements Replicator {
     private final static String RMI_PAXOS_PEER_NAME = "RmiPaxosPeer";
     private final List<String> serverStrings;
     private final int me;
-    private final List<PaxosPeer> peers;
+    private final PaxosPeer peer;
     private final List<ReplicationStore> stores;
 
     /**
@@ -37,7 +37,7 @@ public class ReplicatorImpl implements Replicator {
     public ReplicatorImpl(List<String> serverStrings, int me) {
         this.serverStrings = serverStrings;
         this.me = me;
-        this.peers = Lists.newArrayList();
+        this.peer = new LocalPaxosPeer(me);
         this.stores = Lists.newArrayList();
     }
 
@@ -61,6 +61,7 @@ public class ReplicatorImpl implements Replicator {
             registry.bind(RMI_FACTORY_NAME, factoryStub);
 
             PaxosPeer peer = new LocalPaxosPeer(me);
+            List<PaxosPeer> peers = Lists.newArrayList();
             PaxosPeer stub = (PaxosPeer) UnicastRemoteObject.exportObject(peer, 0);
             registry.bind(RMI_PAXOS_PEER_NAME, stub);
 
@@ -111,7 +112,7 @@ public class ReplicatorImpl implements Replicator {
             return null;
         }
 
-        InvocationHandler handler = new ReplicationHandler(delegate);
+        InvocationHandler handler = new ReplicationHandler(id, peer);
         return (T) Proxy.newProxyInstance(delegate.getClass().getClassLoader(),
                 delegate.getClass().getInterfaces(), handler);
     }

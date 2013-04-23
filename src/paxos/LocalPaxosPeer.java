@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import java.rmi.RemoteException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -25,10 +26,43 @@ public class LocalPaxosPeer implements PaxosPeer {
         this.peers.addAll(peers);
     }
 
-    public void start(int sequenceNumber, PaxosValue value) {
-        final PaxosInstance instance = new PaxosInstance(sequenceNumber, value);
-        instances.put(sequenceNumber, instance);
-        new PaxosThread(instance, peers, me).start();
+    protected void start(int sequenceNumber, PaxosValue value) {
+        new PaxosThread(sequenceNumber, value, peers, me).start();
+    }
+
+    public int log(PaxosValue value) {
+        assert(value != null);
+        // Try sequenceNumbers until we are able to log it.
+        while (true) {
+            // Pick a sequenceNumber.
+            int sequenceNumber = Collections.max(instances.keySet()) + 1;
+
+            start(sequenceNumber, value);
+
+            PaxosValue loggedValue = readLog(sequenceNumber);
+            // Our object was logged!
+            if (loggedValue.getUUID().equals(value.getUUID())) {
+                return sequenceNumber;
+            }
+        }
+    }
+
+    private PaxosValue readLog(int sequenceNumber) {
+        int timeout = 10;
+        while (true) {
+            PaxosValue value = status(sequenceNumber);
+            if (value != null) {
+                return value;
+            }
+            try {
+                Thread.sleep(timeout);
+            } catch (InterruptedException e) {
+                return null;
+            }
+            if (timeout < 10000) {
+                timeout *= 2;
+            }
+        }
     }
 
     /**
