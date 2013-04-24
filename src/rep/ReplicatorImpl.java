@@ -111,7 +111,7 @@ public class ReplicatorImpl implements Replicator {
             return null;
         }
 
-        InvocationHandler handler = new ReplicationHandler(id, peer, (LocalReplicationStore) stores.get(me));
+        InvocationHandler handler = new ReplicationHandler(me, id, peer, (LocalReplicationStore) stores.get(me));
         return (T) Proxy.newProxyInstance(delegate.getClass().getClassLoader(),
                 delegate.getClass().getInterfaces(), handler);
     }

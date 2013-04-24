@@ -7,18 +7,19 @@ import com.joshma.polymerase.paxos.PlayHandler;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.List;
 
 /**
  * Given a Replicator, handles actual Paxos-style replication across them.
  */
 public class ReplicationHandler implements InvocationHandler {
 
+    private final int me;
     private final String objectId;
     private final PaxosPeer peer;
     private final LocalReplicationStore store;
 
-    public ReplicationHandler(String objectId, PaxosPeer peer, LocalReplicationStore store) {
+    public ReplicationHandler(int me, String objectId, PaxosPeer peer, LocalReplicationStore store) {
+        this.me = me;
         this.objectId = objectId;
         this.peer = peer;
         this.store = store;
@@ -31,35 +32,38 @@ public class ReplicationHandler implements InvocationHandler {
         // Log call into Paxos.
         Event event = new Event(objectId, method, args);
         int sequenceNumber = peer.log(event);
-        peer.play(sequenceNumber, new ReplicationPlayHandler());
 
-        System.err.printf("METHOD %s WAS INVOKED WITH ARGS %s\n", method, args);
-        return null; // method.invoke(delegate, args);
+        System.err.printf("[%d] METHOD %s BEING INVOKED WITH ARGS %s\n", me, method, args);
+
+        return peer.play(sequenceNumber, new ReplicationPlayHandler());
     }
 
     private class ReplicationPlayHandler implements PlayHandler {
         @Override
-        public void process(int sequenceNumber, PaxosValue loggedValue) {
+        public Object process(int sequenceNumber, PaxosValue loggedValue) {
+            System.err.printf("[%d] Processing seq=%d, value=%s\n", me, sequenceNumber, loggedValue);
             if (!(loggedValue instanceof Event)) {
                 throw new RuntimeException("Unable to process non-Event type.");
             }
             Event event = (Event) loggedValue;
-            if (event.method == null) {
+            if (event.getMethod() == null) {
                 // noop.
-                return;
+                return null;
             }
             // Run the event!
             String objectId = event.id;
-            Method method = event.method;
+            Method method = event.getMethod();
             Object[] args = event.args;
             Object replicatedObject = store.get(objectId);
+            System.err.printf("[%d] RUNNING %s => %s ON %s\n", me, replicatedObject, method, args);
             try {
-                method.invoke(replicatedObject, args);
+                return method.invoke(replicatedObject, args);
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             } catch (InvocationTargetException e) {
                 e.printStackTrace();
             }
+            return null;
         }
 
         @Override

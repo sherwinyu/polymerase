@@ -7,6 +7,8 @@ import org.junit.Test;
 import java.util.List;
 import java.util.Map;
 
+import static org.junit.Assert.assertEquals;
+
 public class ReplicationTest {
 
     @Test
@@ -32,6 +34,8 @@ public class ReplicationTest {
                         Map<String, String> storeMap = Maps.newHashMap();
                         Map<String, String> replicatedMap = r.replicate(storeMap);
                         replicatedMap.put("k1", "v1");
+                        String value = replicatedMap.get("k1");
+                        assertEquals("v1", value);
                     }
                 }
             }).start();

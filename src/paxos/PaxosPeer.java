@@ -14,7 +14,7 @@ public interface PaxosPeer extends Remote {
      */
     public int log(PaxosValue value) throws RemoteException;
     public PaxosValue status(int sequenceNumber) throws RemoteException;
-    public void play(int sequenceNumber, PlayHandler handler) throws RemoteException;;
+    public Object play(int sequenceNumber, PlayHandler handler) throws RemoteException;;
 
     public PrepareResponse prepare(int sequenceNumber, int n) throws RemoteException;
     public AcceptResponse accept(int sequenceNumber, int n, PaxosValue value) throws RemoteException;

@@ -87,15 +87,17 @@ public class LocalPaxosPeer implements PaxosPeer {
     }
 
     @Override
-    public void play(int sequenceNumber, PlayHandler handler) {
+    public Object play(int sequenceNumber, PlayHandler handler) {
         // Play forward towards sequenceNumber.
+        Object outputValue = null;
         while (curSeq <= sequenceNumber) {
             PaxosValue noop = handler.getNoop();
-            start(sequenceNumber, noop);
-            PaxosValue value = readLog(sequenceNumber);
-            handler.process(sequenceNumber, value);
+            start(curSeq, noop);
+            PaxosValue value = readLog(curSeq);
+            outputValue = handler.process(curSeq, value);
             curSeq++;
         }
+        return outputValue;
     }
 
     @Override
