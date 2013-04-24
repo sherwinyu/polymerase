@@ -1,6 +1,8 @@
 package com.joshma.polymerase.paxos;
 
-public class AcceptResponse {
+import java.io.Serializable;
+
+public class AcceptResponse implements Serializable {
 
     public final Status status;
 

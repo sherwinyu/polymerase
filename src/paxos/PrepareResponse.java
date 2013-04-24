@@ -1,6 +1,8 @@
 package com.joshma.polymerase.paxos;
 
-public class PrepareResponse {
+import java.io.Serializable;
+
+public class PrepareResponse implements Serializable {
 
     public final Status status;
     public final int n;

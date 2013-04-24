@@ -14,8 +14,6 @@ public class PaxosThread extends Thread {
     private final PaxosValue proposedValue;
 
     public PaxosThread(int sequenceNumber, PaxosValue proposedValue, List<PaxosPeer> peers, int me) {
-        assert(peers.size() > 0);
-
         this.sequenceNumber = sequenceNumber;
         this.proposedValue = proposedValue;
         this.peers = peers;

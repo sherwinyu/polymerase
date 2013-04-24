@@ -5,4 +5,5 @@ package com.joshma.polymerase.paxos;
  */
 public interface PlayHandler {
     public void process(int sequenceNumber, PaxosValue loggedValue);
+    public PaxosValue getNoop();
 }

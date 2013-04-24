@@ -56,11 +56,10 @@ public class ReplicatorImpl implements Replicator {
             // Bind remote factories and peers over RMI.
             Registry registry = LocateRegistry.createRegistry(parsedServers.get(me).getPort());
 
-            ReplicationStore store = new ReplicationStoreImpl();
+            ReplicationStore store = new LocalReplicationStore();
             ReplicationStore factoryStub = (ReplicationStore) UnicastRemoteObject.exportObject(store, 0);
             registry.bind(RMI_FACTORY_NAME, factoryStub);
 
-            PaxosPeer peer = new LocalPaxosPeer(me);
             List<PaxosPeer> peers = Lists.newArrayList();
             PaxosPeer stub = (PaxosPeer) UnicastRemoteObject.exportObject(peer, 0);
             registry.bind(RMI_PAXOS_PEER_NAME, stub);
@@ -112,7 +111,7 @@ public class ReplicatorImpl implements Replicator {
             return null;
         }
 
-        InvocationHandler handler = new ReplicationHandler(id, peer);
+        InvocationHandler handler = new ReplicationHandler(id, peer, (LocalReplicationStore) stores.get(me));
         return (T) Proxy.newProxyInstance(delegate.getClass().getClassLoader(),
                 delegate.getClass().getInterfaces(), handler);
     }

@@ -13,11 +13,13 @@ public class LocalPaxosPeer implements PaxosPeer {
     private final List<PaxosPeer> peers;
     private final Map<Integer, PaxosInstance> instances;
     private final int me;
+    private int curSeq;
 
     public LocalPaxosPeer(int me) {
         this.me = me;
         peers = Lists.newArrayList();
         instances = Maps.newHashMap();
+        curSeq = -1;
     }
 
     public void initialize(List<PaxosPeer> peers) throws RemoteException {
@@ -27,6 +29,7 @@ public class LocalPaxosPeer implements PaxosPeer {
     }
 
     protected void start(int sequenceNumber, PaxosValue value) {
+        assert peers.size() > 0 : "Peers are empty!";
         new PaxosThread(sequenceNumber, value, peers, me).start();
     }
 
@@ -35,7 +38,12 @@ public class LocalPaxosPeer implements PaxosPeer {
         // Try sequenceNumbers until we are able to log it.
         while (true) {
             // Pick a sequenceNumber.
-            int sequenceNumber = Collections.max(instances.keySet()) + 1;
+            int sequenceNumber;
+            if (instances.isEmpty()) {
+                sequenceNumber = 1;
+            } else {
+                sequenceNumber = Collections.max(instances.keySet()) + 1;
+            }
 
             start(sequenceNumber, value);
 
@@ -76,6 +84,18 @@ public class LocalPaxosPeer implements PaxosPeer {
             return null;
         }
         return instance.getDecidedValue();
+    }
+
+    @Override
+    public void play(int sequenceNumber, PlayHandler handler) {
+        // Play forward towards sequenceNumber.
+        while (curSeq <= sequenceNumber) {
+            PaxosValue noop = handler.getNoop();
+            start(sequenceNumber, noop);
+            PaxosValue value = readLog(sequenceNumber);
+            handler.process(sequenceNumber, value);
+            curSeq++;
+        }
     }
 
     @Override
