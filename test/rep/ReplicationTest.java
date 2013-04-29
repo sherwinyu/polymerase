@@ -1,7 +1,6 @@
 package com.joshma.polymerase.rep;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -41,7 +40,7 @@ public class ReplicationTest {
 
                         startSignal.await();
 
-                        r.initializeStore();
+                        r.initialize();
                         if (j == 0) {
                             // Initialize the test one on this thread.
                             Replicated<HashMap<String, String>> repValue = r.replicate(new HashMap<String, String>());

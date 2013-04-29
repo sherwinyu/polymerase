@@ -43,7 +43,7 @@ public class ReplicatorImpl implements Replicator {
     }
 
     @Override
-    public void initializeStore() throws InvalidServerException {
+    public void initialize() throws InvalidServerException {
         System.err.println("Initializing server me=" + me);
         final List<ServerIdentifier> parsedServers = Lists.newArrayList();
 
