@@ -104,7 +104,7 @@ public class LocalPaxosPeer implements PaxosPeer {
     public PrepareResponse prepare(int sequenceNumber, int n) throws RemoteException {
         PaxosInstance instance = instances.get(sequenceNumber);
         if (instance == null) {
-            instance = new PaxosInstance(sequenceNumber);
+            instance = new PaxosInstance();
             instances.put(sequenceNumber, instance);
         }
         return instance.prepare(n);

@@ -32,8 +32,7 @@ public class PaxosThread extends Thread {
         try {
             for (int n = me; ; n += peers.size()) {
                 int prepareCount = 0;
-                int maxN = 0;
-                System.err.printf("Starting round with n=%d\n", n);
+                int maxN = -1;
                 // Send prepare(n)
                 for (PaxosPeer peer : peers) {
                     try {
@@ -59,6 +58,7 @@ public class PaxosThread extends Thread {
                 }
 
                 // Send accept(n, highestV)
+                System.err.printf("[%d] Accepting seq=%d, value=%s\n", me, seq, proposalV);
                 int acceptCount = 0;
                 for (PaxosPeer peer : peers) {
                     try {
@@ -84,7 +84,7 @@ public class PaxosThread extends Thread {
         }
 
         // Decided
-        System.err.printf("Done - decided on %s\n", proposalV);
+        System.err.printf("[%d] Done: %s for seq=%d\n", me, proposalV, seq);
         for (PaxosPeer peer : peers) {
             try {
                 peer.decide(seq, proposalV);

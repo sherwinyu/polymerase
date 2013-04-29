@@ -93,7 +93,7 @@ public class PaxosTest {
         lpeers.get(3).start(seqNum, new TestValue(11));
         lpeers.get(4).start(seqNum, new TestValue(12));
 
-        waitN(peers, seqNum, peers.size());
+        waitAll(peers, seqNum);
     }
 
     @Test

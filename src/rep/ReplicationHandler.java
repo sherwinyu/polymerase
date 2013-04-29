@@ -55,7 +55,7 @@ public class ReplicationHandler implements InvocationHandler {
             Method method = event.getMethod();
             Object[] args = event.args;
             Object replicatedObject = store.get(objectId);
-            System.err.printf("[%d] RUNNING %s => %s ON %s\n", me, replicatedObject, method, args);
+            System.err.printf("[%d] RUNNING seq=%s, %s => %s ON %s\n", me, sequenceNumber, replicatedObject, method, args);
             try {
                 return method.invoke(replicatedObject, args);
             } catch (IllegalAccessException e) {

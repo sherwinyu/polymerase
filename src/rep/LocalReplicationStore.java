@@ -19,6 +19,7 @@ public class LocalReplicationStore implements ReplicationStore {
     }
 
     public Object get(String id) {
+        System.err.printf("Returning get(%s) => %s\n", id, replicatedObjects.get(id));
         return replicatedObjects.get(id);
     }
 

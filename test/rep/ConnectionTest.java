@@ -24,7 +24,7 @@ public class ConnectionTest {
                 @Override
                 public void run() {
                     Replicator r = new ReplicatorImpl(serverStrings, j);
-                    r.initialize();
+                    r.initializeStore();
                 }
             }).start();
         }

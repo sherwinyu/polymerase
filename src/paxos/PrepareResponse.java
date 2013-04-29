@@ -19,4 +19,8 @@ public class PrepareResponse implements Serializable {
         this.n = n;
         this.v = v;
     }
+
+    public String toString() {
+        return String.format("PrepareResponse[%s, %d, %s]", status, n, v);
+    }
 }

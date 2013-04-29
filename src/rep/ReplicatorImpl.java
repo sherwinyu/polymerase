@@ -27,6 +27,7 @@ public class ReplicatorImpl implements Replicator {
     private final int me;
     private final PaxosPeer peer;
     private final List<ReplicationStore> stores;
+    private LocalReplicationStore localStore;
 
     /**
      * Creates a set of replicated serverStrings.
@@ -42,7 +43,7 @@ public class ReplicatorImpl implements Replicator {
     }
 
     @Override
-    public void initialize() throws InvalidServerException {
+    public void initializeStore() throws InvalidServerException {
         System.err.println("Initializing server me=" + me);
         final List<ServerIdentifier> parsedServers = Lists.newArrayList();
 
@@ -54,10 +55,11 @@ public class ReplicatorImpl implements Replicator {
 
         try {
             // Bind remote factories and peers over RMI.
+            System.err.printf("[%d] Binding registry on %d\n", me, parsedServers.get(me).getPort());
             Registry registry = LocateRegistry.createRegistry(parsedServers.get(me).getPort());
 
-            ReplicationStore store = new LocalReplicationStore();
-            ReplicationStore factoryStub = (ReplicationStore) UnicastRemoteObject.exportObject(store, 0);
+            localStore = new LocalReplicationStore();
+            ReplicationStore factoryStub = (ReplicationStore) UnicastRemoteObject.exportObject(localStore, 0);
             registry.bind(RMI_FACTORY_NAME, factoryStub);
 
             List<PaxosPeer> peers = Lists.newArrayList();
@@ -68,11 +70,11 @@ public class ReplicatorImpl implements Replicator {
                 // Handle local case.
                 if (i == me) {
                     peers.add(peer);
-                    stores.add(store);
+                    stores.add(localStore);
                     continue;
                 }
 
-                // Otherwise add the RMI version.
+                // Otherwise add the RMI'd version.
                 ServerIdentifier serverIdentifier = parsedServers.get(i);
                 Registry remoteRegistry = LocateRegistry.getRegistry(serverIdentifier.getHostname(),
                         serverIdentifier.getPort());
@@ -84,7 +86,9 @@ public class ReplicatorImpl implements Replicator {
             }
 
             ((LocalPaxosPeer) peer).initialize(peers);
+
             System.err.printf("[%d] Done initializing\n", me);
+
         } catch (RemoteException e) {
             e.printStackTrace();
         } catch (NotBoundException e) {
@@ -96,7 +100,7 @@ public class ReplicatorImpl implements Replicator {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T replicate(T delegate) {
+    public <T> Replicated<T> replicate(T delegate) {
         // Get a unique ID.
         String id = String.format("%s-%d", delegate.getClass().getCanonicalName(), delegate.hashCode());
 
@@ -111,8 +115,20 @@ public class ReplicatorImpl implements Replicator {
             return null;
         }
 
-        InvocationHandler handler = new ReplicationHandler(me, id, peer, (LocalReplicationStore) stores.get(me));
-        return (T) Proxy.newProxyInstance(delegate.getClass().getClassLoader(),
+        InvocationHandler handler = new ReplicationHandler(me, id, peer, localStore);
+        T replicatedObj = (T) Proxy.newProxyInstance(delegate.getClass().getClassLoader(),
                 delegate.getClass().getInterfaces(), handler);
+
+        return new Replicated<T>(replicatedObj, id);
+    }
+
+    @Override
+    public Object get(String id) {
+        Object delegate = localStore.get(id);
+        InvocationHandler handler = new ReplicationHandler(me, id, peer, localStore);
+        Object replicatedObj = Proxy.newProxyInstance(delegate.getClass().getClassLoader(),
+                delegate.getClass().getInterfaces(), handler);
+
+        return replicatedObj;
     }
 }
