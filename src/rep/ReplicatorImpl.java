@@ -14,6 +14,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * The core class in this package. Instantiates and maintains server connections and creates
@@ -102,9 +103,8 @@ public class ReplicatorImpl implements Replicator {
     @Override
     public <T> Replicated<T> replicate(T delegate) {
         // Get a unique ID.
-        String id = String.format("%s-%d", delegate.getClass().getCanonicalName(), delegate.hashCode());
+        String id = UUID.randomUUID().toString();
 
-        // TODO better ID handling - should log to Paxos to get guaranteed unique ID.
         try {
             // Create the object on remote servers.
             for (ReplicationStore store : stores) {
