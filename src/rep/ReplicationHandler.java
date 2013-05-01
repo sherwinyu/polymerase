@@ -4,6 +4,7 @@ import com.joshma.polymerase.paxos.PaxosPeer;
 import com.joshma.polymerase.paxos.PaxosValue;
 import com.joshma.polymerase.paxos.PlayHandler;
 
+import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -27,7 +28,12 @@ public class ReplicationHandler implements InvocationHandler {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        // TODO Check that args are all serializable.
+        for (Object arg : args) {
+            if (!(Serializable.class.isAssignableFrom(arg.getClass()))) {
+                throw new RuntimeException(String.format("Could not call method %s! All arguments must implement Serializable - %s does not.",
+                        method.getName(), arg.getClass().getName()));
+            }
+        }
 
         // Log call into Paxos.
         Event event = new Event(objectId, method, args);

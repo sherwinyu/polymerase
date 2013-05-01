@@ -24,6 +24,7 @@ public class ReplicatorImpl implements Replicator {
 
     private final static String RMI_FACTORY_NAME = "RmiFactory";
     private final static String RMI_PAXOS_PEER_NAME = "RmiPaxosPeer";
+
     private final List<String> serverStrings;
     private final int me;
     private final PaxosPeer peer;
@@ -47,11 +48,14 @@ public class ReplicatorImpl implements Replicator {
     public void initialize() throws InvalidServerException {
         System.err.println("Initializing server me=" + me);
         final List<ServerIdentifier> parsedServers = Lists.newArrayList();
+        // Initialize barrierServers to be parsedServers with port + 1024
+        final List<ServerIdentifier> barrierServers = Lists.newArrayList();
 
         // Validate serverStrings first.
         for (String serverstring : serverStrings) {
             ServerIdentifier server = ServerIdentifier.parse(serverstring);
             parsedServers.add(server);
+            barrierServers.add(new ServerIdentifier(server.getHostname(), server.getPort() + 1024));
         }
 
         try {
@@ -66,6 +70,8 @@ public class ReplicatorImpl implements Replicator {
             List<PaxosPeer> peers = Lists.newArrayList();
             PaxosPeer stub = (PaxosPeer) UnicastRemoteObject.exportObject(peer, 0);
             registry.bind(RMI_PAXOS_PEER_NAME, stub);
+
+            new Barrier(barrierServers, barrierServers.get(me)).await();
 
             for (int i = 0; i < parsedServers.size(); i++) {
                 // Handle local case.
