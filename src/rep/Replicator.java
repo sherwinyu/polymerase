@@ -7,6 +7,6 @@ public interface Replicator {
 
     public void initialize() throws InvalidServerException;
     public <T> Replicated<T> replicate(T delegate);
-    public Object get(String id);
+    public <T> T get(String id);
 
 }

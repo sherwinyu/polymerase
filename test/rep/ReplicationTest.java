@@ -56,8 +56,8 @@ public class ReplicationTest {
                         if (j == 0) {
                             // Initialize the test one on this thread.
                             Replicated<HashMap<String, String>> repValue = r.replicate(new HashMap<String, String>());
-                            Map<String, String> replicatedMap = repValue.obj;
-                            replicatedId = repValue.id;
+                            Map<String, String> replicatedMap = repValue.getObj();
+                            replicatedId = repValue.getId();
 
                             replicatedMap.put("k1", "v1");
                             testValue0 = replicatedMap.get("k1");
@@ -67,14 +67,14 @@ public class ReplicationTest {
                             while (replicatedId == null) {
                                 Thread.sleep(100);
                             }
-                            Map<String, String> remoteMap = (Map<String, String>) r.get(replicatedId);
+                            Map<String, String> remoteMap = r.get(replicatedId);
                             testValue1 = remoteMap.get("k1");
                         }
                         if (j == 3) {
                             while (replicatedId == null) {
                                 Thread.sleep(100);
                             }
-                            Map<String, String> remoteMap = (Map<String, String>) r.get(replicatedId);
+                            Map<String, String> remoteMap = r.get(replicatedId);
                             testValue2 = remoteMap.get("k1");
                         }
 

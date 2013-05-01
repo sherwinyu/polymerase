@@ -28,10 +28,12 @@ public class ReplicationHandler implements InvocationHandler {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        for (Object arg : args) {
-            if (!(Serializable.class.isAssignableFrom(arg.getClass()))) {
-                throw new RuntimeException(String.format("Could not call method %s! All arguments must implement Serializable - %s does not.",
-                        method.getName(), arg.getClass().getName()));
+        if (args != null) {
+            for (Object arg : args) {
+                if (!(Serializable.class.isAssignableFrom(arg.getClass()))) {
+                    throw new RuntimeException(String.format("Could not call method %s! All arguments must implement Serializable - %s does not.",
+                            method.getName(), arg.getClass().getName()));
+                }
             }
         }
 

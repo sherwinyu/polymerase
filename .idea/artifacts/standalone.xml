@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact build-on-make="true" name="standalone">
+    <output-path>$PROJECT_DIR$/out/artifacts/standalone</output-path>
+    <root id="root">
+      <element id="artifact" artifact-name="standalone:jar" />
+      <element id="file-copy" path="$PROJECT_DIR$/standalone.prop" />
+    </root>
+  </artifact>
+</component>

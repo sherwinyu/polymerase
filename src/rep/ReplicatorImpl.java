@@ -129,13 +129,12 @@ public class ReplicatorImpl implements Replicator {
         return new Replicated<T>(replicatedObj, id);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Object get(String id) {
+    public <T> T get(String id) {
         Object delegate = localStore.get(id);
         InvocationHandler handler = new ReplicationHandler(me, id, peer, localStore);
-        Object replicatedObj = Proxy.newProxyInstance(delegate.getClass().getClassLoader(),
+        return (T) Proxy.newProxyInstance(delegate.getClass().getClassLoader(),
                 delegate.getClass().getInterfaces(), handler);
-
-        return replicatedObj;
     }
 }
