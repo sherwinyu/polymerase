@@ -46,7 +46,7 @@ public class ReplicatorImpl implements Replicator {
 
     @Override
     public void initialize() throws InvalidServerException {
-        System.err.println("Initializing server me=" + me);
+        System.err.printf("Initializng server me=%d...\n", me);
         final List<ServerIdentifier> parsedServers = Lists.newArrayList();
         // Initialize barrierServers to be parsedServers with port + 1024
         final List<ServerIdentifier> barrierServers = Lists.newArrayList();
@@ -60,7 +60,6 @@ public class ReplicatorImpl implements Replicator {
 
         try {
             // Bind remote factories and peers over RMI.
-            System.err.printf("[%d] Binding registry on %d\n", me, parsedServers.get(me).getPort());
             Registry registry = LocateRegistry.createRegistry(parsedServers.get(me).getPort());
 
             localStore = new LocalReplicationStore();
@@ -71,7 +70,9 @@ public class ReplicatorImpl implements Replicator {
             PaxosPeer stub = (PaxosPeer) UnicastRemoteObject.exportObject(peer, 0);
             registry.bind(RMI_PAXOS_PEER_NAME, stub);
 
+            System.err.println("Waiting for all servers to be ready...");
             new Barrier(barrierServers, barrierServers.get(me)).await();
+            System.err.println("All servers ready, setting up peers and factories.");
 
             for (int i = 0; i < parsedServers.size(); i++) {
                 // Handle local case.
@@ -94,7 +95,7 @@ public class ReplicatorImpl implements Replicator {
 
             ((LocalPaxosPeer) peer).initialize(peers);
 
-            System.err.printf("[%d] Done initializing\n", me);
+            System.err.println("Initialization complete");
 
         } catch (RemoteException e) {
             e.printStackTrace();
