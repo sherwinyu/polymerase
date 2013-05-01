@@ -22,6 +22,7 @@ public class StandaloneServer {
     private static final String CREATE_CMD = "create";
     private static final String APPEND_CMD = "append";
     private static final String LOOKUP_CMD = "lookup";
+    private static final String POP_CMD = "pop";
 
     private final List<String> serverStrings;
     private final int me;
@@ -61,6 +62,14 @@ public class StandaloneServer {
                     String id = tokens[1];
                     List<String> array = replicator.get(id);
                     System.out.println("Array: " + array);
+                    continue;
+                }
+                if (POP_CMD.equals(command) && tokens.length == 2) {
+                    String id = tokens[1];
+                    List<String> array = replicator.get(id);
+                    array.remove(array.size() - 1);
+                    System.out.println("Removing the last element of " + id);
+                    System.out.println("  New array: " + array);
                     continue;
                 }
             }
